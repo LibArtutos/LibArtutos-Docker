@@ -100,14 +100,13 @@ if not config.get("ui_config"):
 with open("config.json", "w+") as w:
     json.dump(obj=config, fp=w, sort_keys=True, indent=4)
 
-'''
 print("\033[32mTESTING YOUR CONFIG...\033[0m")
 src.functions.tests.tmdb_test(config)
 src.functions.tests.category_list_test(config)
 src.functions.tests.account_list_test(config)
 src.functions.tests.cloudflare_test(config)
 print("DONE.\n")
-'''
+
 
 def threaded_metadata():
     for thread in threading.enumerate():
@@ -215,26 +214,6 @@ def create_app():
                 soup.find("title", {"id": "@ld-title"}).string = "libDrive"
             except:
                 pass
-        if (
-            config.get("arcio")
-            and config.get("arcio") != ""
-            and LIBDRIVE_DEBUG == False
-        ):
-            req = requests.get("https://arc.io/arc-sw.js")
-            with open("./build/arc-sw.js", "wb") as wb:
-                wb.write(req.content)
-            code = config.get("arcio")
-            if code == "dev":
-                code = "tUUqUjhw"
-            soup.find("script", {"id": "@ld-script-arcio"})[
-                "src"
-            ] = "//arc.io/widget.min.js#%s" % (code)
-        else:
-            if os.path.exists("./build/arc-sw.js"):
-                os.remove("./build/arc-sw.js")
-            soup.find("script", {"id": "@ld-script-arcio"})["src"] = ""
-        with open("./build/index.html", "w+") as w:
-            w.write(str(soup))
         r.close()
 
     app = flask.Flask(__name__, static_folder="build")
